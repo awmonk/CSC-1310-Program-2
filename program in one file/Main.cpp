@@ -2,6 +2,7 @@
 #define MAIN_CPP
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -24,7 +25,9 @@ public:
 
     friend ostream &operator<<(ostream &os, const County &c)
     {
-        os << c.name << ", " << c.state << ": " << c.population;
+        os << setw(40) << left << c.name;
+        os << setw(30) << left << c.state;
+        os << setw(10) << left << c.population;
         return os;
     };
 };
@@ -38,153 +41,165 @@ private:
         T value;
         listNode *next;
         listNode *prev;
-        listNode(T value) : value(value), next(nullptr), prev(nullptr){};
-        ~listNode() { delete value; };
+
+        listNode(T value)
+            : value(value), next(nullptr), prev(nullptr) {}
+        ~listNode() { delete value; }
     };
     listNode *head;
     listNode *tail;
-    void split(List<T> &left, List<T> &right)
+    void print(listNode *node)
     {
-        if (head == nullptr)
+        cout << "\n";
+        if (node == nullptr)
             return;
-
-        listNode *mid = head;
-        listNode *end = tail;
-
-        while (end != nullptr && end->next != nullptr)
-        {
-            mid = mid->next;
-            end = end->next->next;
-        }
-
-        left.head = head;
-        left.tail = mid;
-        right.head = mid->next;
-        right.tail = tail;
-
-        mid->next = nullptr;
-    }
-
-    listNode *merge(List<T> &l, List<T> &r)
+        cout << *(node->value);
+        print(node->next);
+    };
+    typename List<T>::listNode *split(listNode *left, listNode *right)
     {
-        listNode temp(nullptr);
-        listNode *mergedTail = &temp;
+        if (left == nullptr || right == nullptr)
+            return nullptr;
 
-        while (l.head != nullptr && r.head != nullptr)
+        listNode *inc = left;
+        listNode *dec = right;
+        listNode *prev = nullptr;
+
+        while (inc != nullptr && inc != dec)
         {
-            if (*(l.head->value) < *(r.head->value))
-            {
-                mergedTail->next = l.head;
-                l.head->prev = mergedTail;
-                l.head = l.head->next;
-            }
-            else
-            {
-                mergedTail->next = r.head;
-                r.head->prev = mergedTail;
-                r.head = r.head->next;
-            }
-            mergedTail->next->prev = mergedTail;
-            mergedTail = mergedTail->next;
+            prev = inc;
+            inc = inc->next;
+            if (inc == dec)
+                break;
+            dec = dec->prev;
         }
 
-        if (l.head != nullptr)
+        if (prev)
         {
-            mergedTail->next = l.head;
-            l.head->prev = mergedTail;
+            prev->next = nullptr;
+            return inc;
+        }
+
+        return nullptr;
+    };
+    typename List<T>::listNode *merge(listNode *left, listNode *right)
+    {
+        if (left == nullptr)
+            return right;
+        if (right == nullptr)
+            return left;
+        if (left->value >= right->value)
+        {
+            left->next = merge(left->next, right);
+            left->next->prev = left;
+            left->prev = nullptr;
+            return left;
         }
         else
         {
-            mergedTail->next = r.head;
-            r.head->prev = mergedTail;
+            right->next = merge(left, right->next);
+            right->next->prev = right;
+            right->prev = nullptr;
+            return right;
+        }
+    };
+    typename List<T>::listNode *mergeSort(listNode *start, listNode *end)
+    {
+        if (start == nullptr || start->next == end)
+            return start;
+
+        listNode *left = nullptr;
+        listNode *right = nullptr;
+        listNode *mid = nullptr;
+
+        mid = split(start, end);
+
+        if (mid != nullptr)
+        {
+            left = mergeSort(start, mid->prev);
+            right = mergeSort(mid, end);
         }
 
-        return temp.next;
-    }
+        return merge(left, right);
+    };
 
 public:
-    List() : head(nullptr), tail(nullptr){};
+    List() : head(nullptr), tail(nullptr) {}
     ~List()
     {
-        listNode *nodePtr = head;
-        while (nodePtr != nullptr)
+        listNode *node;
+        listNode *next;
+        node = tail;
+
+        while (node != nullptr)
         {
-            listNode *nextNode = nodePtr->next;
-            delete nodePtr;
-            nodePtr = nextNode;
+            next = node->prev;
+            delete node;
+            node = next;
         }
+        cout << "\nGOODBYE!\n";
+        cout << endl;
     };
     void print()
     {
         print(head);
-        cout << endl;
-    };
-    void print(listNode *nodePtr)
-    {
-        if (nodePtr == nullptr)
-            return;
-        cout << *(nodePtr->value) << endl;
-        print(nodePtr->next);
     };
     void append(T value)
     {
-        listNode *nodePtr = new listNode(value);
+        listNode *node = new listNode(value);
         if (head == nullptr)
         {
-            head = nodePtr;
-            tail = nodePtr;
+            head = node;
+            tail = node;
         }
         else
         {
-            tail->next = nodePtr;
-            nodePtr->prev = tail;
-            tail = nodePtr;
+            tail->next = node;
+            node->prev = tail;
+            tail = node;
         }
     };
     void mergeSort()
     {
-        if (head != nullptr && head->next != nullptr)
+        head = mergeSort(head, tail);
+        listNode *current = head;
+        while (current != nullptr && current->next != nullptr)
         {
-            List<T> l;
-            List<T> r;
-            split(l, r);
-
-            l.mergeSort();
-            r.mergeSort();
-
-            head = merge(l, r);
+            current->next->prev = current;
+            current = current->next;
         }
-    }
+        tail = current;
+    };
 };
 
 int main()
 {
-    ifstream file;
+    ifstream infile;
     stringstream temp;
     string line, county, state;
     int index, pop;
-    // file.open("counties_list.csv", ios::in);
-    file.open("counties_ten.csv", ios::in);
 
-    // Create a new list of county pointers
+    // infile.open("counties_list.csv", ios::in);
+    infile.open("counties_ten.csv", ios::in);
+
     List<County *> list;
     County *newCounty;
 
-    if (file.good())
+    if (infile.good())
     {
-        while (getline(file, line, ','))
+        while (getline(infile, line, ','))
         {
             temp.clear();
             temp.str(line);
             temp >> index;
 
-            getline(file, line, ',');
+            getline(infile, line, ',');
             county = line;
 
-            getline(file, line, ',');
+            getline(infile, line, ',');
             state = line;
 
-            getline(file, line, '\n');
+            getline(infile, line, '\n');
             temp.clear();
             temp.str(line);
             temp >> pop;
@@ -194,12 +209,14 @@ int main()
             list.append(newCounty);
         }
     }
-
-    file.close();
+    infile.close();
 
     // Call mergesort()
+    cout << "\nCALLING MERGESORT\n";
     list.mergeSort();
+
     // Print the list
+    cout << "\nSORTED LIST\n";
     list.print();
 
     return 0;

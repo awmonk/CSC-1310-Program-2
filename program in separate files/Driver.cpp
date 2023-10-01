@@ -1,56 +1,52 @@
 #include "County.h"
 #include "List.h"
-#include <fstream>
-#include <string>
-#include <sstream>
 using namespace std;
 
 int main()
 {
-    ifstream file;
+    ifstream infile;
     stringstream temp;
     string line, county, state;
     int index, pop;
 
-    // file.open("counties_list.csv", ios::in);
-    file.open("counties_ten.csv", ios::in);
+    infile.open("counties_list.csv", ios::in);
+    // infile.open("counties_ten.csv", ios::in);
 
-    // Create a new list of county pointers
     List<County *> list;
     County *newCounty;
 
-    if (file.good())
+    if (infile.good())
     {
-        while (getline(file, line, ','))
+        while (getline(infile, line, ','))
         {
             temp.clear();
             temp.str(line);
             temp >> index;
 
-            getline(file, line, ',');
+            getline(infile, line, ',');
             county = line;
 
-            getline(file, line, ',');
+            getline(infile, line, ',');
             state = line;
 
-            getline(file, line, '\n');
+            getline(infile, line, '\n');
             temp.clear();
             temp.str(line);
             temp >> pop;
 
             newCounty = new County(index, county, state, pop);
-
             // Append newCounty to your list
             list.append(newCounty);
         }
     }
+    infile.close();
 
-    file.close();
-
-    // Call mergesort()
+    // Call mergeSort()
+    cout << "\nCALLING MERGESORT\n";
     list.mergeSort();
 
     // Print the list
+    cout << "\nSORTED LIST\n";
     list.print();
 
     return 0;
