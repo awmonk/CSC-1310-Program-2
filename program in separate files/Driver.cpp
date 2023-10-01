@@ -48,6 +48,7 @@ int main()
     file.close();
 
     // Call mergesort()
+    list.mergeSort();
 
     // Print the list
     list.print();

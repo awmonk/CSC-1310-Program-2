@@ -47,14 +47,70 @@ private:
        checking your base case. Once you have severed these nodes, return the first
        node after where the list was severed (the node that would otherwise have been
        pointed to by the middle node). */
-    typename List<T>::listNode *split(listNode *head, listNode *tail){
+    typename List<T>::listNode *split(listNode *head, listNode *tail)
+    {
+        /* If there are one or fewer nodes in the list */
+        if (head == nullptr || head->next == nullptr)
+            return nullptr;
 
+        listNode *first = head;
+        listNode *second = tail;
+
+        /* If there are only two nodes, return the second as the split point */
+        if (first->next == second)
+        {
+            head = first;
+            head->next = nullptr;
+            second->prev = nullptr;
+            return second;
+        }
+
+        while (head->next != second->prev && head->next != nullptr &&
+               second->prev != nullptr)
+        {
+            first = first->next;
+            second = second->prev;
+        }
+
+        listNode *secondHalf = second->prev;
+
+        /* Severing nodes */
+        second->prev = nullptr;
+
+        /* Update the head pointer */
+        head = first;
+        head->next = nullptr;
+        secondHalf->prev = nullptr;
+        return secondHalf;
     };
 
     /* Overloaded merge function for nodes called in the mergeSort. This is a private
        function as it is only ever called by the mergeSort */
-    typename List<T>::listNode *merge(listNode *l, listNode *r){
+    typename List<T>::listNode *merge(listNode *first, listNode *second)
+    {
+        // If the 'first' linked list is empty, then we dont have to merge.
+        if (first == nullptr)
+            return second;
 
+        // If the 'second' linked list is empty, then don’t have to merge.
+        if (second == nullptr)
+            return first;
+
+        // Regular merge conditions.
+        if (first->value > second->value)
+        {
+            second->next = merge(first, second->next);
+            second->next->prev = second;
+            second->prev = nullptr;
+            return second;
+        }
+        else
+        {
+            first->next = merge(first->next, second);
+            first->next->prev = first;
+            first->prev = nullptr;
+            return first;
+        }
     };
     /* The base case is when the list partition is either zero or one node, in which
        case the function will return the first parameter (which is either the only
@@ -68,14 +124,28 @@ private:
        from the merge function. */
     typename List<T>::listNode *mergeSort(listNode *head, listNode *tail)
     {
-        if (head == nullptr)
+        if (head == nullptr || head == tail)
             return head;
-        if (head->next == nullptr)
-            return head;
-        listNode *first, *second;
 
-        second = split(first, second);
-        mergeSort(first, second);
+        // Splitting the list.
+        listNode *middle = split(head, tail);
+
+        // Recursively calling merge sort on both the sublists.
+        listNode *first = mergeSort(head, middle);
+        listNode *second = mergeSort(middle->next, tail);
+
+        // Merging the two sorted sublists.
+        head = merge(first, second);
+
+        // Find the new tail.
+        listNode *newTail = head;
+        while (newTail->next != nullptr)
+            newTail = newTail->next;
+
+        // Update the tail pointer.
+        tail = newTail;
+
+        return head;
     };
 
 public:

@@ -15,46 +15,61 @@ public:
 // This function divides the linked list into two parts and returns the head of second half.
 Node *split(Node *head)
 {
-    Node *slowPointer = head;
-    Node *fastPointer = head;
-    while (fastPointer != nullptr && fastPointer->next != nullptr &&
-           fastPointer->next->next != nullptr)
+    Node *slow = head;
+    Node *fast = head;
+    while (fast != nullptr && fast->next != nullptr &&
+           fast->next->next != nullptr)
     {
-        fastPointer = fastPointer->next->next;
-        slowPointer = slowPointer->next;
+        fast = fast->next->next;
+        slow = slow->next;
     }
-    Node *secondHalf = slowPointer->next;
+    Node *secondHalf = slow->next;
 
     // Separating the second part.
-    slowPointer->next = nullptr;
+    slow->next = nullptr;
+    return secondHalf;
+}
+
+Node *split(Node *head, Node *tail)
+{
+    Node *first = head;
+    Node *second = tail;
+    while (head->next != second->prev && head->next != nullptr &&
+           second->prev != nullptr)
+    {
+        first = first->next;
+        second = second->prev;
+    }
+    Node *secondHalf = second->prev;
+    second->prev = nullptr;
     return secondHalf;
 }
 
 // This function will merge two lists and will return the sorted list.
-Node *merge(Node *firstList, Node *secondList)
+Node *merge(Node *first, Node *second)
 {
-    // If the 'firstList' linked list is empty, then we dont have to merge.
-    if (firstList == nullptr)
-        return secondList;
+    // If the 'first' linked list is empty, then we dont have to merge.
+    if (first == nullptr)
+        return second;
 
-    // If the 'secondList' linked list is empty, then don’t have to merge.
-    if (secondList == nullptr)
-        return firstList;
+    // If the 'second' linked list is empty, then don’t have to merge.
+    if (second == nullptr)
+        return first;
 
     // Regular merge conditions.
-    if (firstList->data > secondList->data)
+    if (first->data > second->data)
     {
-        secondList->next = merge(firstList, secondList->next);
-        secondList->next->prev = secondList;
-        secondList->prev = nullptr;
-        return secondList;
+        second->next = merge(first, second->next);
+        second->next->prev = second;
+        second->prev = nullptr;
+        return second;
     }
     else
     {
-        firstList->next = merge(firstList->next, secondList);
-        firstList->next->prev = firstList;
-        firstList->prev = nullptr;
-        return firstList;
+        first->next = merge(first->next, second);
+        first->next->prev = first;
+        first->prev = nullptr;
+        return first;
     }
 }
 
@@ -67,16 +82,16 @@ Node *mergeSort(Node *head)
     if (head->next == nullptr)
         return head;
 
-    Node *firstList = nullptr, *secondList = nullptr;
+    Node *first = nullptr, *second = nullptr;
     // Splitting the list.
-    secondList = split(head);
+    second = split(head);
 
     // Recursively calling merge sort on both the sublists.
-    firstList = mergeSort(head);
-    secondList = mergeSort(secondList);
+    first = mergeSort(head);
+    second = mergeSort(second);
 
     // Merging the two sorted sub lists.
-    Node *sortedList = merge(firstList, secondList);
+    Node *sortedList = merge(first, second);
     return sortedList;
 }
 
