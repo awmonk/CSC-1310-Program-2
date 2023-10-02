@@ -35,15 +35,18 @@ int main()
             temp >> pop;
 
             newCounty = new County(index, county, state, pop);
-            // Append newCounty to your list
             list.append(newCounty);
         }
     }
     infile.close();
 
-    // Call mergeSort()
+    // Call mergesort
     cout << "\nCALLING MERGESORT\n";
-    list.mergeSort();
+    list.mergesort();
+
+    // Write to external file
+    cout << "\nWRITING TO FILE (sorted_counties.txt)\n";
+    list.outfile("sorted_counties.txt");
 
     // Print the list
     cout << "\nSORTED LIST\n";

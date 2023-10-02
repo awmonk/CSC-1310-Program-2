@@ -1,3 +1,16 @@
+/*
+    1,  Autauga County,     Alabama,    55514
+    2,  Baldwin County,     Alabama,    190790
+    3,  Barbour County,     Alabama,    27201      // missing
+    4,  Bibb County,        Alabama,    22597
+    5,  Blount County,      Alabama,    57826
+    6,  Bullock County,     Alabama,    10474
+    7,  Butler County,      Alabama,    20307
+    8,  Calhoun County,     Alabama,    117296     // missing
+    9,  Chambers County,    Alabama,    34064
+    10, Cherokee County,    Alabama,    26021
+*/
+
 #ifndef MAIN_CPP
 #define MAIN_CPP
 
@@ -69,8 +82,8 @@ int main()
     string line, county, state;
     int index, pop;
 
-    infile.open("counties_list.csv", ios::in);
-    // infile.open("counties_ten.csv", ios::in);
+    // infile.open("counties_list.csv", ios::in);
+    infile.open("counties_ten.csv", ios::in);
 
     List<County *> list;
     County *newCounty;
@@ -95,7 +108,6 @@ int main()
             temp >> pop;
 
             newCounty = new County(index, county, state, pop);
-            // Append newCounty to your list
             list.append(newCounty);
         }
     }
@@ -106,6 +118,7 @@ int main()
     list.mergesort();
 
     // Write to external file
+    cout << "\nWRITING TO FILE (sorted_counties.txt)\n";
     list.outfile("sorted_counties.txt");
 
     // Print the list
@@ -281,6 +294,7 @@ void List<T>::mergesort()
     tail = current;
 };
 
+// Write to text file
 template <class T>
 void List<T>::outfile(const string &filename)
 {

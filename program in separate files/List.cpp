@@ -71,7 +71,7 @@ typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
 };
 
 template <class T>
-typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
+typename List<T>::listNode *List<T>::mergesort(listNode *start, listNode *end)
 {
     if (start == nullptr || start->next == end)
         return start;
@@ -84,8 +84,8 @@ typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
 
     if (mid != nullptr)
     {
-        left = mergeSort(start, mid->prev);
-        right = mergeSort(mid, end);
+        left = mergesort(start, mid->prev);
+        right = mergesort(mid, end);
     }
 
     return merge(left, right);
@@ -135,9 +135,9 @@ void List<T>::append(T value)
 };
 
 template <class T>
-void List<T>::mergeSort()
+void List<T>::mergesort()
 {
-    head = mergeSort(head, tail);
+    head = mergesort(head, tail);
     listNode *current = head;
     while (current != nullptr && current->next != nullptr)
     {
@@ -146,3 +146,23 @@ void List<T>::mergeSort()
     }
     tail = current;
 };
+
+template <class T>
+void List<T>::outfile(const string &filename)
+{
+    ofstream outfile(filename);
+    if (!outfile.is_open())
+    {
+        cerr << "Error opening the file for writing." << endl;
+        return;
+    }
+
+    listNode *current = head;
+    while (current != nullptr)
+    {
+        outfile << *(current->value) << endl;
+        current = current->next;
+    }
+
+    outfile.close();
+}

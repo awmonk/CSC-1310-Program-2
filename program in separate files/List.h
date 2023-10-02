@@ -23,14 +23,15 @@ private:
     void print(listNode *node);
     typename List<T>::listNode *split(listNode *left, listNode *right);
     typename List<T>::listNode *merge(listNode *left, listNode *right);
-    typename List<T>::listNode *mergeSort(listNode *start, listNode *end);
+    typename List<T>::listNode *mergesort(listNode *start, listNode *end);
 
 public:
     List();
     ~List();
     void print();
     void append(T value);
-    void mergeSort();
+    void mergesort();
+    void outfile(const string &filename);
 };
 
 #endif
