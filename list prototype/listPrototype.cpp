@@ -54,7 +54,8 @@ public:
     void print();
     void append(T value);
     void mergeSort();
-    int listSize(listNode *node);
+    void swap(listNode *node1, listNode *node2);
+    int getSize();
 };
 
 int main()
@@ -139,71 +140,54 @@ void List<T>::print()
 };
 
 template <class T>
-typename List<T>::listNode *List<T>::split(listNode *left, listNode *right)
+typename List<T>::listNode *List<T>::split(listNode *start, listNode *end)
 {
-    cout << "\n==================================================\n\n";
+    if (start == nullptr || end == nullptr || start == end)
+        return start;
 
-    listNode *inc = left;
-    listNode *dec = right;
+    listNode *inc = start;
+    listNode *dec = end;
     listNode *mid = nullptr;
 
-    if (left == nullptr || right == nullptr)
-        return nullptr;
-
-    int headIndex = listSize(right);
-    int tailIndex = listSize(left);
-
-    cout << "Starting from: " << headIndex << " to " << tailIndex << "\n\n";
-
-    print(dec);
-    cout << "\n--------------------------------------------------\n";
-
-    cout << "\nHead value: " << headIndex;
-    cout << "\nTail value: " << tailIndex << "\n\n";
-
-    while (inc != nullptr && inc != dec)
+    while (inc != dec->next && dec != inc->prev)
     {
         inc = inc->next;
-        headIndex++;
-        cout << "Incrementing head: ";
-        cout << headIndex << "\n";
-
         dec = dec->prev;
-        tailIndex--;
-        cout << "Decrementing tail: ";
-        cout << tailIndex << "\n\n";
-
-        if (inc->next == dec)
-            break;
     }
 
-    mid = dec;
-    inc = nullptr;
+    if (inc == dec->next)
+    {
+        mid = inc;
+        inc = mid->next;
+        mid->next = nullptr;
 
-    cout << "Midpoint value: " << tailIndex << "\n";
+        if (inc)
+            inc->prev = nullptr;
+    }
 
     return mid;
-};
+}
 
 template <class T>
-typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
+typename List<T>::listNode *List<T>::merge(listNode *start, listNode *end)
 {
     listNode *sorted = nullptr;
-    if (left == nullptr)
-        return right;
-    if (right == nullptr)
-        return left;
+    if (start == nullptr)
+        return end;
 
-    if (left->value < right->value)
+    if (end == nullptr)
+        return start;
+
+    if (start->value < end->value)
     {
-        sorted = left;
-        sorted->next = merge(left->next, right);
+        sorted = start;
+        sorted->next = merge(start->next, end);
         sorted->next->prev = sorted;
     }
     else
     {
-        sorted = right;
-        sorted->next = merge(left, right->next);
+        sorted = end;
+        sorted->next = merge(start, end->next);
         sorted->next->prev = sorted;
     }
     return sorted;
@@ -225,17 +209,17 @@ typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
 template <class T>
 void List<T>::append(T value)
 {
-    listNode *newNode = new listNode(value);
+    listNode *node = new listNode(value);
     if (head == nullptr)
     {
-        head = newNode;
-        tail = newNode;
+        head = node;
+        tail = node;
     }
     else
     {
-        tail->next = newNode;
-        newNode->prev = tail;
-        tail = newNode;
+        tail->next = node;
+        node->prev = tail;
+        tail = node;
     }
 };
 
@@ -243,8 +227,10 @@ template <class T>
 void List<T>::mergeSort()
 {
     listNode *node;
+
     head = mergeSort(head, tail);
     node = head;
+
     while (node->next != nullptr)
         node = node->next;
 
@@ -252,9 +238,10 @@ void List<T>::mergeSort()
 };
 
 template <class T>
-int List<T>::listSize(listNode *node)
+int List<T>::getSize()
 {
     int index = 0;
+    listNode *node = head;
     while (node != nullptr)
     {
         node = node->next;
@@ -262,3 +249,48 @@ int List<T>::listSize(listNode *node)
     }
     return index;
 };
+
+template <class T>
+void List<T>::swap(listNode *node1, listNode *node2)
+{
+    if (node1 == nullptr || node2 == nullptr || node1 == node2)
+        return;
+
+    // Check if the nodes are adjacent
+    if (node1->next == node2 || node2->next == node1)
+    {
+        listNode *prevNode1 = node1->prev;
+        listNode *prevNode2 = node2->prev;
+
+        // Swap next pointers
+        if (prevNode1 != nullptr)
+            prevNode1->next = node2;
+        else
+            head = node2;
+
+        if (prevNode2 != nullptr)
+            prevNode2->next = node1;
+        else
+            head = node1;
+
+        listNode *temp = node1->next;
+        node1->next = node2->next;
+        node2->next = temp;
+
+        // Update prev pointers
+        if (node1->next != nullptr)
+            node1->next->prev = node1;
+        if (node2->next != nullptr)
+            node2->next->prev = node2;
+
+        // Update prev pointers of swapped nodes
+        node1->prev = prevNode2;
+        node2->prev = prevNode1;
+
+        // Update tail if necessary
+        if (node1 == tail)
+            tail = node2;
+        else if (node2 == tail)
+            tail = node1;
+    }
+}

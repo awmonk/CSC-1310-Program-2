@@ -21,45 +21,44 @@ private:
     void print(listNode *node)
     {
         cout << "\n";
+
         if (node == nullptr)
             return;
 
-        cout << node->value;
+        cout << *(node->value);
+
         print(node->next);
     };
 
     listNode *split(listNode *left, listNode *right)
     {
-        if (left == nullptr || left->next == nullptr)
-            return left;
-
+        listNode *fast = left;
         listNode *slow = left;
-        listNode *fast = left->next;
+        listNode *mid;
 
-        while (fast != nullptr)
+        while (fast->next && fast->next->next)
         {
-            fast = fast->next;
-            if (fast != nullptr)
-            {
-                slow = slow->next;
-                fast = fast->next;
-            }
+            fast = fast->next->next;
+            slow = slow->next;
         }
 
-        listNode *mid = slow->next;
+        mid = slow->next;
         slow->next = nullptr;
+
         return mid;
     };
 
     listNode *merge(listNode *left, listNode *right)
     {
         listNode *sorted = nullptr;
+
         if (left == nullptr)
             return right;
+
         if (right == nullptr)
             return left;
 
-        if (left->value > right->value)
+        if (*(left->value) > *(right->value))
         {
             sorted = left;
             sorted->next = merge(left->next, right);
@@ -71,6 +70,7 @@ private:
             sorted->next = merge(left, right->next);
             sorted->next->prev = sorted;
         }
+
         return sorted;
     };
 
@@ -92,12 +92,15 @@ public:
     {
         listNode *node = head;
         listNode *next;
+
         while (node != nullptr)
         {
             next = node->next;
+            delete node->value;
             delete node;
             node = next;
         }
+
         cout << "\nGOODBYE!\n";
         cout << endl;
     };
@@ -106,23 +109,25 @@ public:
 
     void append(T value)
     {
-        listNode *newNode = new listNode(value);
+        listNode *node = new listNode(value);
+
         if (head == nullptr)
         {
-            head = newNode;
-            tail = newNode;
+            head = node;
+            tail = node;
         }
         else
         {
-            tail->next = newNode;
-            newNode->prev = tail;
-            tail = newNode;
+            tail->next = node;
+            node->prev = tail;
+            tail = node;
         }
     };
 
     void mergeSort()
     {
         listNode *node;
+
         head = mergeSort(head, tail);
         node = head;
 
@@ -135,16 +140,11 @@ public:
     void outfile(const string &filename)
     {
         ofstream outfile(filename);
-        if (!outfile.is_open())
-        {
-            cerr << "Error opening the file for writing.\n";
-            return;
-        }
-
         listNode *node = head;
+
         while (node != nullptr)
         {
-            outfile << node->value << "\n";
+            outfile << *(node->value) << "\n";
             node = node->next;
         }
 

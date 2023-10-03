@@ -12,7 +12,7 @@ int main()
     // infile.open("counties_list.csv", ios::in);
     infile.open("counties_ten.csv", ios::in);
 
-    List<County> list;
+    List<County *> list;
 
     if (infile.good())
     {
@@ -33,7 +33,7 @@ int main()
             temp.str(line);
             temp >> pop;
 
-            County newCounty(index, county, state, pop);
+            County *newCounty = new County(index, county, state, pop);
             list.append(newCounty);
         }
     }

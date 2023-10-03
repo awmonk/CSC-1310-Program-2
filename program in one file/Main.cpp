@@ -5,7 +5,7 @@
 #include <sstream>
 using namespace std;
 
-/* COUNTY PROTOTYPES AND VARIABLES */
+/* COUNTY PROTOTYPES AND CLASS VARIABLES */
 class County
 {
 private:
@@ -23,14 +23,14 @@ public:
 
     friend ostream &operator<<(ostream &os, const County &c)
     {
-        os << setw(40) << left << c.name;
+        os << setw(50) << left << c.name;
         os << setw(30) << left << c.state;
         os << setw(10) << left << c.population;
         return os;
     };
 };
 
-/* LIST PROTOTYPES AND VARIABLES */
+/* LIST PROTOTYPES AND CLASS VARIABLES */
 template <class T>
 class List
 {
@@ -70,7 +70,7 @@ int main()
     infile.open("counties_list.csv", ios::in);
     // infile.open("counties_ten.csv", ios::in);
 
-    List<County> list;
+    List<County *> list;
 
     if (infile.good())
     {
@@ -91,7 +91,7 @@ int main()
             temp.str(line);
             temp >> pop;
 
-            County newCounty(index, county, state, pop);
+            County *newCounty = new County(index, county, state, pop);
             list.append(newCounty);
         }
     }
@@ -107,7 +107,7 @@ int main()
     list.print();
 
     return 0;
-}
+};
 
 /* COUNTY DEFINITIONS */
 County::County(int i, string n, string s, int p)
@@ -126,105 +126,101 @@ List<T>::List() : head(nullptr), tail(nullptr){};
 template <class T>
 List<T>::~List()
 {
-    listNode *current = head;
+    listNode *node = head;
     listNode *next;
-    while (current != nullptr)
+
+    while (node != nullptr)
     {
-        next = current->next;
-        delete current;
-        current = next;
+        next = node->next;
+        delete node->value;
+        delete node;
+        node = next;
     }
+
     cout << "\nGOODBYE!\n";
     cout << endl;
 };
 
 template <class T>
-void List<T>::print()
-{
-    print(head);
-};
+void List<T>::print() { print(head); };
 
 template <class T>
 void List<T>::append(T value)
 {
-    listNode *newNode = new listNode(value);
+    listNode *node = new listNode(value);
+
     if (head == nullptr)
     {
-        head = newNode;
-        tail = newNode;
+        head = node;
+        tail = node;
     }
     else
     {
-        tail->next = newNode;
-        newNode->prev = tail;
-        tail = newNode;
+        tail->next = node;
+        node->prev = tail;
+        tail = node;
     }
 };
 
 template <class T>
 void List<T>::mergeSort()
 {
-    head = mergeSort(head, tail);
-    listNode *current = head;
-    while (current->next != nullptr)
-        current = current->next;
+    listNode *node;
 
-    tail = current;
+    head = mergeSort(head, tail);
+    node = head;
+
+    while (node->next != nullptr)
+        node = node->next;
+
+    tail = node;
 };
 
 template <class T>
 void List<T>::outfile(const string &filename)
 {
     ofstream outfile(filename);
-    if (!outfile.is_open())
-    {
-        cerr << "Error opening the file for writing.\n";
-        return;
-    }
+    listNode *node = head;
 
-    listNode *current = head;
-    while (current != nullptr)
+    while (node != nullptr)
     {
-        outfile << current->value << "\n";
-        current = current->next;
+        outfile << *(node->value) << "\n";
+        node = node->next;
     }
 
     outfile.close();
-}
+};
 
 /* Private definitions */
 template <class T>
 void List<T>::print(listNode *node)
 {
     cout << "\n";
+
     if (node == nullptr)
         return;
 
-    cout << node->value;
+    cout << *(node->value);
+
     print(node->next);
 };
 
 template <class T>
 typename List<T>::listNode *List<T>::split(listNode *left, listNode *right)
 {
-    if (left == nullptr || left->next == nullptr)
-        return left;
-
+    listNode *fast = left;
     listNode *slow = left;
-    listNode *fast = left->next;
+    listNode *mid;
 
-    while (fast != nullptr)
+    while (fast->next && fast->next->next)
     {
-        fast = fast->next;
-        if (fast != nullptr)
-        {
-            slow = slow->next;
-            fast = fast->next;
-        }
+        fast = fast->next->next;
+        slow = slow->next;
     }
 
-    listNode *mid = slow->next;
+    mid = slow->next;
     slow->next = nullptr;
+
     return mid;
 };
 
@@ -232,12 +228,14 @@ template <class T>
 typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
 {
     listNode *sorted = nullptr;
+
     if (left == nullptr)
         return right;
+
     if (right == nullptr)
         return left;
 
-    if (left->value > right->value)
+    if (*(left->value) > *(right->value))
     {
         sorted = left;
         sorted->next = merge(left->next, right);
@@ -249,6 +247,7 @@ typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
         sorted->next = merge(left, right->next);
         sorted->next->prev = sorted;
     }
+
     return sorted;
 };
 
