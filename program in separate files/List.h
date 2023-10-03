@@ -91,13 +91,13 @@ public:
     List() : head(nullptr), tail(nullptr){};
     ~List()
     {
-        listNode *current = head;
+        listNode *node = head;
         listNode *next;
-        while (current != nullptr)
+        while (node != nullptr)
         {
-            next = current->next;
-            delete current;
-            current = next;
+            next = node->next;
+            delete node;
+            node = next;
         }
         cout << "\nGOODBYE!\n";
         cout << endl;
@@ -123,14 +123,14 @@ public:
 
     void mergeSort()
     {
-        listNode *current;
+        listNode *node;
         head = mergeSort(head, tail);
-        current = head;
+        node = head;
 
-        while (current->next != nullptr)
-            current = current->next;
+        while (node->next != nullptr)
+            node = node->next;
 
-        tail = current;
+        tail = node;
     };
 
     void outfile(const string &filename)
@@ -142,11 +142,11 @@ public:
             return;
         }
 
-        listNode *current = head;
-        while (current != nullptr)
+        listNode *node = head;
+        while (node != nullptr)
         {
-            outfile << current->value << "\n";
-            current = current->next;
+            outfile << node->value << "\n";
+            node = node->next;
         }
 
         outfile.close();

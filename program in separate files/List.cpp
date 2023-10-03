@@ -70,7 +70,7 @@ typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
 };
 
 template <class T>
-typename List<T>::listNode *List<T>::mergesort(listNode *start, listNode *end)
+typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
 {
     if (start == nullptr || start->next == end)
         return start;
@@ -83,8 +83,8 @@ typename List<T>::listNode *List<T>::mergesort(listNode *start, listNode *end)
 
     if (mid != nullptr)
     {
-        left = mergesort(start, mid->prev);
-        right = mergesort(mid, end);
+        left = mergeSort(start, mid->prev);
+        right = mergeSort(mid, end);
     }
 
     return merge(left, right);
@@ -134,9 +134,9 @@ void List<T>::append(T value)
 };
 
 template <class T>
-void List<T>::mergesort()
+void List<T>::mergeSort()
 {
-    head = mergesort(head, tail);
+    head = mergeSort(head, tail);
     listNode *current = head;
     while (current != nullptr && current->next != nullptr)
     {
