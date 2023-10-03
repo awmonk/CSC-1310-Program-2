@@ -9,8 +9,8 @@ int main()
     string line, county, state;
     int index, pop;
 
-    // infile.open("counties_list.csv", ios::in);
-    infile.open("counties_ten.csv", ios::in);
+    infile.open("counties_list.csv", ios::in);
+    // infile.open("counties_ten.csv", ios::in);
 
     List<County *> list;
 
@@ -49,4 +49,4 @@ int main()
     list.print();
 
     return 0;
-}
+};

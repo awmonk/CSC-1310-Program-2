@@ -2,8 +2,8 @@
 #define COUNTY_H
 
 #include <iostream>
-#include <string>
 #include <iomanip>
+#include <string>
 #include <fstream>
 #include <sstream>
 using namespace std;
@@ -26,7 +26,7 @@ public:
 
     friend ostream &operator<<(ostream &os, const County &c)
     {
-        os << setw(40) << left << c.name;
+        os << setw(50) << left << c.name;
         os << setw(30) << left << c.state;
         os << setw(10) << left << c.population;
         return os;

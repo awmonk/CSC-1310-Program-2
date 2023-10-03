@@ -30,7 +30,7 @@ private:
         print(node->next);
     };
 
-    listNode *split(listNode *left, listNode *right)
+    typename List<T>::listNode *split(listNode *left, listNode *right)
     {
         listNode *fast = left;
         listNode *slow = left;
@@ -48,7 +48,7 @@ private:
         return mid;
     };
 
-    listNode *merge(listNode *left, listNode *right)
+    typename List<T>::listNode *merge(listNode *left, listNode *right)
     {
         listNode *sorted = nullptr;
 
@@ -74,7 +74,7 @@ private:
         return sorted;
     };
 
-    listNode *mergeSort(listNode *start, listNode *end)
+    typename List<T>::listNode *mergeSort(listNode *start, listNode *end)
     {
         if (start == nullptr || start->next == nullptr)
             return start;
@@ -96,7 +96,6 @@ public:
         while (node != nullptr)
         {
             next = node->next;
-            delete node->value;
             delete node;
             node = next;
         }

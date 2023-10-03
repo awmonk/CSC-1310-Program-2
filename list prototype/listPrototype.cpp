@@ -1,6 +1,6 @@
 #include <iostream>
-#include <string>
 #include <iomanip>
+#include <string>
 #include <fstream>
 #include <sstream>
 using namespace std;
@@ -51,11 +51,12 @@ private:
 public:
     List() : head(nullptr), tail(nullptr) {}
     ~List();
+    int getSize();
     void print();
     void append(T value);
     void mergeSort();
     void swap(listNode *node1, listNode *node2);
-    int getSize();
+    void selectionSort();
 };
 
 int main()
@@ -114,83 +115,78 @@ bool County::operator>(const County &c) { return population > c.population; }
 template <class T>
 List<T>::~List()
 {
-    listNode *current = head;
-    while (current != nullptr)
+    listNode *node = head;
+    listNode *next;
+
+    while (node != nullptr)
     {
-        listNode *next = current->next;
-        delete current;
-        current = next;
+        next = node->next;
+        delete node;
+        node = next;
     }
+
+    cout << "\nGOODBYE!\n";
+    cout << endl;
 };
 
 template <class T>
 void List<T>::print(listNode *node)
 {
+    cout << "\n";
+
     if (node == nullptr)
         return;
 
-    cout << node->value << "\n";
+    cout << node->value;
+
     print(node->next);
 };
 
 template <class T>
-void List<T>::print()
-{
-    print(head);
-};
+void List<T>::print() { print(head); };
 
 template <class T>
 typename List<T>::listNode *List<T>::split(listNode *start, listNode *end)
 {
-    if (start == nullptr || end == nullptr || start == end)
-        return start;
+    listNode *slow = start;
+    listNode *fast = start;
+    listNode *mid;
 
-    listNode *inc = start;
-    listNode *dec = end;
-    listNode *mid = nullptr;
-
-    while (inc != dec->next && dec != inc->prev)
+    while (fast->next && fast->next->next)
     {
-        inc = inc->next;
-        dec = dec->prev;
+        slow = slow->next;
+        fast = fast->next->next;
     }
 
-    if (inc == dec->next)
-    {
-        mid = inc;
-        inc = mid->next;
-        mid->next = nullptr;
-
-        if (inc)
-            inc->prev = nullptr;
-    }
+    mid = slow->next;
+    slow->next = nullptr;
 
     return mid;
 }
 
 template <class T>
-typename List<T>::listNode *List<T>::merge(listNode *start, listNode *end)
+typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
 {
-    listNode *sorted = nullptr;
-    if (start == nullptr)
-        return end;
+    if (!left)
+        return right;
 
-    if (end == nullptr)
-        return start;
+    if (!right)
+        return left;
 
-    if (start->value < end->value)
+    if (left->value > right->value)
     {
-        sorted = start;
-        sorted->next = merge(start->next, end);
-        sorted->next->prev = sorted;
+        left->next = merge(left->next, right);
+        left->next->prev = left;
+        left->prev = nullptr;
+        return left;
     }
     else
     {
-        sorted = end;
-        sorted->next = merge(start, end->next);
-        sorted->next->prev = sorted;
+        right->next = merge(left, right->next);
+        right->next->prev = right;
+        right->prev = nullptr;
+        return right;
     }
-    return sorted;
 };
 
 template <class T>
@@ -242,55 +238,88 @@ int List<T>::getSize()
 {
     int index = 0;
     listNode *node = head;
+
     while (node != nullptr)
     {
         node = node->next;
         index++;
     }
+
     return index;
 };
 
-template <class T>
+template <typename T>
+void List<T>::selectionSort()
+{
+    listNode *node = head;
+    listNode *min;
+    listNode *temp;
+
+    while (node)
+    {
+        min = node;
+        temp = node->next;
+
+        while (temp)
+        {
+            if (temp->value < min->value)
+                min = temp;
+
+            temp = temp->next;
+        }
+
+        swap(node, min);
+        node = node->next;
+    }
+}
+
+template <typename T>
 void List<T>::swap(listNode *node1, listNode *node2)
 {
-    if (node1 == nullptr || node2 == nullptr || node1 == node2)
+    listNode *temp;
+    listNode *temp1;
+    listNode *temp2;
+
+    if (node1 == node2)
         return;
 
-    // Check if the nodes are adjacent
-    if (node1->next == node2 || node2->next == node1)
+    if (node1->next == node2)
     {
-        listNode *prevNode1 = node1->prev;
-        listNode *prevNode2 = node2->prev;
+        temp = node2->next;
+        node2->next = node1;
+        node1->next = temp;
+        node2->prev = node1->prev;
+        node1->prev = node2;
 
-        // Swap next pointers
-        if (prevNode1 != nullptr)
-            prevNode1->next = node2;
-        else
-            head = node2;
+        if (node2->prev)
+            node2->prev->next = node2;
 
-        if (prevNode2 != nullptr)
-            prevNode2->next = node1;
-        else
-            head = node1;
-
-        listNode *temp = node1->next;
-        node1->next = node2->next;
-        node2->next = temp;
-
-        // Update prev pointers
-        if (node1->next != nullptr)
+        if (node1->next)
             node1->next->prev = node1;
-        if (node2->next != nullptr)
+    }
+    else if (node2->next == node1)
+    {
+        swap(node2, node1);
+    }
+    else
+    {
+        temp1 = node1->next;
+        temp2 = node1->prev;
+        node1->next = node2->next;
+        node1->prev = node2->prev;
+        node2->next = temp1;
+        node2->prev = temp2;
+
+        if (node1->next)
+            node1->next->prev = node1;
+
+        if (node1->prev)
+            node1->prev->next = node1;
+
+        if (node2->next)
             node2->next->prev = node2;
 
-        // Update prev pointers of swapped nodes
-        node1->prev = prevNode2;
-        node2->prev = prevNode1;
-
-        // Update tail if necessary
-        if (node1 == tail)
-            tail = node2;
-        else if (node2 == tail)
-            tail = node1;
+        if (node2->prev)
+            node2->prev->next = node2;
     }
 }
