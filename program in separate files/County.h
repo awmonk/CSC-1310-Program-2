@@ -2,12 +2,13 @@
 #define COUNTY_H
 
 #include <iostream>
+#include <string>
 #include <iomanip>
 #include <fstream>
-#include <string>
 #include <sstream>
 using namespace std;
 
+/* COUNTY PROTOTYPES AND VARIABLES */
 class County
 {
 private:

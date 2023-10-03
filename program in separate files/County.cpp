@@ -1,6 +1,7 @@
 #include "County.h"
 using namespace std;
 
+/* COUNTY DEFINITIONS */
 County::County(int i, string n, string s, int p)
     : index(i), name(n), state(s), population(p){};
 int County::getIndex() { return index; };

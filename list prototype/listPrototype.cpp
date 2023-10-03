@@ -5,7 +5,6 @@
 #include <sstream>
 using namespace std;
 
-/* COUNTY PROTOTYPES AND VARIABLES */
 class County
 {
 private:
@@ -30,7 +29,6 @@ public:
     };
 };
 
-/* LIST PROTOTYPES AND VARIABLES */
 template <class T>
 class List
 {
@@ -51,15 +49,14 @@ private:
     listNode *mergeSort(listNode *start, listNode *end);
 
 public:
-    List();
+    List() : head(nullptr), tail(nullptr) {}
     ~List();
     void print();
     void append(T value);
     void mergeSort();
-    void outfile(const string &filename);
+    int listSize(listNode *node);
 };
 
-/* DRIVER */
 int main()
 {
     ifstream infile;
@@ -67,8 +64,7 @@ int main()
     string line, county, state;
     int index, pop;
 
-    infile.open("counties_list.csv", ios::in);
-    // infile.open("counties_ten.csv", ios::in);
+    infile.open("counties_ten.csv", ios::in);
 
     List<County> list;
 
@@ -100,42 +96,40 @@ int main()
     cout << "\nCALLING MERGESORT\n";
     list.mergeSort();
 
-    cout << "\nWRITING TO FILE (mergesort.txt)\n";
-    list.outfile("mergesort.txt");
-
     cout << "\nSORTED LIST\n";
     list.print();
 
     return 0;
-}
+};
 
-/* COUNTY DEFINITIONS */
 County::County(int i, string n, string s, int p)
-    : index(i), name(n), state(s), population(p){};
-int County::getIndex() { return index; };
-int County::getPopulation() { return population; };
-void County::setIndex(int i) { index = i; };
-bool County::operator<(const County &c) { return population < c.population; };
-bool County::operator>(const County &c) { return population > c.population; };
-
-/* LIST DEFINITIONS */
-/* Public definitions */
-template <class T>
-List<T>::List() : head(nullptr), tail(nullptr){};
+    : index(i), name(n), state(s), population(p) {}
+int County::getIndex() { return index; }
+int County::getPopulation() { return population; }
+void County::setIndex(int i) { index = i; }
+bool County::operator<(const County &c) { return population < c.population; }
+bool County::operator>(const County &c) { return population > c.population; }
 
 template <class T>
 List<T>::~List()
 {
     listNode *current = head;
-    listNode *next;
     while (current != nullptr)
     {
-        next = current->next;
+        listNode *next = current->next;
         delete current;
         current = next;
     }
-    cout << "\nGOODBYE!\n";
-    cout << endl;
+};
+
+template <class T>
+void List<T>::print(listNode *node)
+{
+    if (node == nullptr)
+        return;
+
+    cout << node->value << "\n";
+    print(node->next);
 };
 
 template <class T>
@@ -145,86 +139,49 @@ void List<T>::print()
 };
 
 template <class T>
-void List<T>::append(T value)
-{
-    listNode *newNode = new listNode(value);
-    if (head == nullptr)
-    {
-        head = newNode;
-        tail = newNode;
-    }
-    else
-    {
-        tail->next = newNode;
-        newNode->prev = tail;
-        tail = newNode;
-    }
-};
-
-template <class T>
-void List<T>::mergeSort()
-{
-    head = mergeSort(head, tail);
-    listNode *current = head;
-    while (current->next != nullptr)
-        current = current->next;
-
-    tail = current;
-};
-
-template <class T>
-void List<T>::outfile(const string &filename)
-{
-    ofstream outfile(filename);
-    if (!outfile.is_open())
-    {
-        cerr << "Error opening the file for writing.\n";
-        return;
-    }
-
-    listNode *current = head;
-    while (current != nullptr)
-    {
-        outfile << current->value << "\n";
-        current = current->next;
-    }
-
-    outfile.close();
-}
-
-/* Private definitions */
-template <class T>
-void List<T>::print(listNode *node)
-{
-    cout << "\n";
-    if (node == nullptr)
-        return;
-
-    cout << node->value;
-    print(node->next);
-};
-
-template <class T>
 typename List<T>::listNode *List<T>::split(listNode *left, listNode *right)
 {
-    if (left == nullptr || left->next == nullptr)
-        return left;
+    cout << "\n==================================================\n\n";
 
-    listNode *slow = left;
-    listNode *fast = left->next;
+    listNode *inc = left;
+    listNode *dec = right;
+    listNode *mid = nullptr;
 
-    while (fast != nullptr)
+    if (left == nullptr || right == nullptr)
+        return nullptr;
+
+    int headIndex = listSize(right);
+    int tailIndex = listSize(left);
+
+    cout << "Starting from: " << headIndex << " to " << tailIndex << "\n\n";
+
+    print(dec);
+    cout << "\n--------------------------------------------------\n";
+
+    cout << "\nHead value: " << headIndex;
+    cout << "\nTail value: " << tailIndex << "\n\n";
+
+    while (inc != nullptr && inc != dec)
     {
-        fast = fast->next;
-        if (fast != nullptr)
-        {
-            slow = slow->next;
-            fast = fast->next;
-        }
+        inc = inc->next;
+        headIndex++;
+        cout << "Incrementing head: ";
+        cout << headIndex << "\n";
+
+        dec = dec->prev;
+        tailIndex--;
+        cout << "Decrementing tail: ";
+        cout << tailIndex << "\n\n";
+
+        if (inc->next == dec)
+            break;
     }
 
-    listNode *mid = slow->next;
-    slow->next = nullptr;
+    mid = dec;
+    inc = nullptr;
+
+    cout << "Midpoint value: " << tailIndex << "\n";
+
     return mid;
 };
 
@@ -237,7 +194,7 @@ typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
     if (right == nullptr)
         return left;
 
-    if (left->value > right->value)
+    if (left->value < right->value)
     {
         sorted = left;
         sorted->next = merge(left->next, right);
@@ -263,4 +220,45 @@ typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
     listNode *right = mergeSort(mid, end);
 
     return merge(left, right);
+};
+
+template <class T>
+void List<T>::append(T value)
+{
+    listNode *newNode = new listNode(value);
+    if (head == nullptr)
+    {
+        head = newNode;
+        tail = newNode;
+    }
+    else
+    {
+        tail->next = newNode;
+        newNode->prev = tail;
+        tail = newNode;
+    }
+};
+
+template <class T>
+void List<T>::mergeSort()
+{
+    listNode *node;
+    head = mergeSort(head, tail);
+    node = head;
+    while (node->next != nullptr)
+        node = node->next;
+
+    tail = node;
+};
+
+template <class T>
+int List<T>::listSize(listNode *node)
+{
+    int index = 0;
+    while (node != nullptr)
+    {
+        node = node->next;
+        index++;
+    }
+    return index;
 };

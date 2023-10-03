@@ -1,7 +1,7 @@
-#include "County.h"
 #include "List.h"
 using namespace std;
 
+/* DRIVER */
 int main()
 {
     ifstream infile;
@@ -9,11 +9,10 @@ int main()
     string line, county, state;
     int index, pop;
 
-    infile.open("counties_list.csv", ios::in);
-    // infile.open("counties_ten.csv", ios::in);
+    // infile.open("counties_list.csv", ios::in);
+    infile.open("counties_ten.csv", ios::in);
 
-    List<County *> list;
-    County *newCounty;
+    List<County> list;
 
     if (infile.good())
     {
@@ -34,23 +33,20 @@ int main()
             temp.str(line);
             temp >> pop;
 
-            newCounty = new County(index, county, state, pop);
+            County newCounty(index, county, state, pop);
             list.append(newCounty);
         }
     }
     infile.close();
 
-    // Call mergesort
     cout << "\nCALLING MERGESORT\n";
-    list.mergesort();
+    list.mergeSort();
 
-    // Write to external file
-    cout << "\nWRITING TO FILE (sorted_counties.txt)\n";
-    list.outfile("sorted_counties.txt");
+    cout << "\nWRITING TO FILE (mergesort.txt)\n";
+    list.outfile("mergesort.txt");
 
-    // Print the list
     cout << "\nSORTED LIST\n";
     list.print();
 
     return 0;
-};
+}
