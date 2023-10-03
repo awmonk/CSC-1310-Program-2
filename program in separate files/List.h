@@ -14,7 +14,6 @@ private:
         listNode *next;
         listNode *prev;
         listNode(T value) : value(value), next(nullptr), prev(nullptr){};
-        ~listNode() { delete value; };
     };
     listNode *head;
     listNode *tail;
