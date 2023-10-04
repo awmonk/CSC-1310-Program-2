@@ -145,23 +145,14 @@ template <class T>
 void List<T>::print() { print(head); };
 
 template <class T>
-typename List<T>::listNode *List<T>::split(listNode *start, listNode *end)
+typename List<T>::listNode *List<T>::split(listNode *left, listNode *right)
 {
-    listNode *inc = start;
-    listNode *dec = end;
+    listNode *inc = left;
+    listNode *dec = right;
     listNode *mid;
-    int incIndex = getSize(dec);
-    int decIndex = getSize(inc);
 
     if (!inc->next)
         return nullptr;
-
-    cout << "\nSPLITTING FROM " << incIndex << " to " << decIndex;
-    cout << "\nCURRENT PARTITION\n";
-    print(inc);
-
-    if (inc->next == dec)
-        return inc;
 
     while (inc != dec && inc->next != dec)
     {
@@ -169,7 +160,7 @@ typename List<T>::listNode *List<T>::split(listNode *start, listNode *end)
         dec = dec->prev;
     }
 
-    mid = inc;
+    mid = inc->next;
     inc->next = nullptr;
 
     return mid;
@@ -209,7 +200,7 @@ typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
         return start;
 
     listNode *mid = split(start, end);
-    listNode *left = mergeSort(start, mid);
+    listNode *left = mergeSort(start, mid->prev);
     listNode *right = mergeSort(mid, end);
 
     return merge(left, right);
@@ -219,6 +210,7 @@ template <class T>
 void List<T>::append(T value)
 {
     listNode *node = new listNode(value);
+
     if (!head)
     {
         head = node;
