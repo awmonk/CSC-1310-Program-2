@@ -22,7 +22,7 @@ private:
     {
         cout << "\n";
 
-        if (node == nullptr)
+        if (!node)
             return;
 
         cout << *(node->value);
@@ -50,12 +50,12 @@ private:
 
     typename List<T>::listNode *merge(listNode *left, listNode *right)
     {
-        listNode *sorted = nullptr;
+        listNode *sorted;
 
-        if (left == nullptr)
+        if (!left)
             return right;
 
-        if (right == nullptr)
+        if (!right)
             return left;
 
         if (*(left->value) > *(right->value))
@@ -76,7 +76,7 @@ private:
 
     typename List<T>::listNode *mergeSort(listNode *start, listNode *end)
     {
-        if (start == nullptr || start->next == nullptr)
+        if (!start || !start->next)
             return start;
 
         listNode *mid = split(start, end);
@@ -93,7 +93,7 @@ public:
         listNode *node = head;
         listNode *next;
 
-        while (node != nullptr)
+        while (node)
         {
             next = node->next;
             delete node;
@@ -110,7 +110,7 @@ public:
     {
         listNode *node = new listNode(value);
 
-        if (head == nullptr)
+        if (!head)
         {
             head = node;
             tail = node;
@@ -130,7 +130,7 @@ public:
         head = mergeSort(head, tail);
         node = head;
 
-        while (node->next != nullptr)
+        while (node->next)
             node = node->next;
 
         tail = node;
@@ -141,7 +141,7 @@ public:
         ofstream outfile(filename);
         listNode *node = head;
 
-        while (node != nullptr)
+        while (node)
         {
             outfile << *(node->value) << "\n";
             node = node->next;

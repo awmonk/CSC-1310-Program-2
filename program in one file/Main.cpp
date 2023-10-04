@@ -40,7 +40,7 @@ private:
         T value;
         listNode *next;
         listNode *prev;
-        listNode(T value) : value(value), next(nullptr), prev(nullptr) {}
+        listNode(T value) : value(value), next(nullptr), prev(nullptr){};
     };
     listNode *head;
     listNode *tail;
@@ -51,8 +51,9 @@ private:
     listNode *mergeSort(listNode *start, listNode *end);
 
 public:
-    List();
+    List() : head(nullptr), tail(nullptr){};
     ~List();
+    int getSize(listNode *node);
     void print();
     void append(T value);
     void mergeSort();
@@ -97,7 +98,7 @@ int main()
     }
     infile.close();
 
-    cout << "\nCALLING MERGESORT\n";
+    cout << "\nCALLING MERGE SORT\n";
     list.mergeSort();
 
     cout << "\nWRITING TO FILE (mergesort.txt)\n";
@@ -121,15 +122,12 @@ bool County::operator>(const County &c) { return population > c.population; };
 /* LIST DEFINITIONS */
 /* Public definitions */
 template <class T>
-List<T>::List() : head(nullptr), tail(nullptr){};
-
-template <class T>
 List<T>::~List()
 {
     listNode *node = head;
     listNode *next;
 
-    while (node != nullptr)
+    while (node)
     {
         next = node->next;
         delete node->value;
@@ -149,7 +147,7 @@ void List<T>::append(T value)
 {
     listNode *node = new listNode(value);
 
-    if (head == nullptr)
+    if (!head)
     {
         head = node;
         tail = node;
@@ -170,7 +168,7 @@ void List<T>::mergeSort()
     head = mergeSort(head, tail);
     node = head;
 
-    while (node->next != nullptr)
+    while (node->next)
         node = node->next;
 
     tail = node;
@@ -182,7 +180,7 @@ void List<T>::outfile(const string &filename)
     ofstream outfile(filename);
     listNode *node = head;
 
-    while (node != nullptr)
+    while (node)
     {
         outfile << *(node->value) << "\n";
         node = node->next;
@@ -197,7 +195,7 @@ void List<T>::print(listNode *node)
 {
     cout << "\n";
 
-    if (node == nullptr)
+    if (!node)
         return;
 
     cout << *(node->value);
@@ -227,12 +225,12 @@ typename List<T>::listNode *List<T>::split(listNode *left, listNode *right)
 template <class T>
 typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
 {
-    listNode *sorted = nullptr;
+    listNode *sorted;
 
-    if (left == nullptr)
+    if (!left)
         return right;
 
-    if (right == nullptr)
+    if (!right)
         return left;
 
     if (*(left->value) > *(right->value))
@@ -254,7 +252,7 @@ typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
 template <class T>
 typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
 {
-    if (start == nullptr || start->next == nullptr)
+    if (!start || !start->next)
         return start;
 
     listNode *mid = split(start, end);
@@ -262,4 +260,18 @@ typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
     listNode *right = mergeSort(mid, end);
 
     return merge(left, right);
+};
+
+template <class T>
+int List<T>::getSize(listNode *node)
+{
+    int index = 0;
+
+    while (node)
+    {
+        node = node->next;
+        index++;
+    }
+
+    return index;
 };
