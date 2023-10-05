@@ -32,18 +32,21 @@ private:
 
     typename List<T>::listNode *split(listNode *left, listNode *right)
     {
-        listNode *fast = left;
-        listNode *slow = left;
+        listNode *inc = left;
+        listNode *dec = right;
         listNode *mid;
 
-        while (fast->next && fast->next->next)
+        if (!inc->next)
+            return nullptr;
+
+        while (inc != dec && inc->next != dec)
         {
-            fast = fast->next->next;
-            slow = slow->next;
+            inc = inc->next;
+            dec = dec->prev;
         }
 
-        mid = slow->next;
-        slow->next = nullptr;
+        mid = inc->next;
+        inc->next = nullptr;
 
         return mid;
     };
@@ -80,7 +83,7 @@ private:
             return start;
 
         listNode *mid = split(start, end);
-        listNode *left = mergeSort(start, mid);
+        listNode *left = mergeSort(start, mid->prev);
         listNode *right = mergeSort(mid, end);
 
         return merge(left, right);
@@ -148,6 +151,19 @@ public:
         }
 
         outfile.close();
+    };
+
+    int getSize(listNode *node)
+    {
+        int index = 0;
+
+        while (node)
+        {
+            node = node->next;
+            index++;
+        }
+
+        return index;
     };
 };
 

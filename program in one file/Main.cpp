@@ -206,18 +206,21 @@ void List<T>::print(listNode *node)
 template <class T>
 typename List<T>::listNode *List<T>::split(listNode *left, listNode *right)
 {
-    listNode *fast = left;
-    listNode *slow = left;
+    listNode *inc = left;
+    listNode *dec = right;
     listNode *mid;
 
-    while (fast->next && fast->next->next)
+    if (!inc->next)
+        return nullptr;
+
+    while (inc != dec && inc->next != dec)
     {
-        fast = fast->next->next;
-        slow = slow->next;
+        inc = inc->next;
+        dec = dec->prev;
     }
 
-    mid = slow->next;
-    slow->next = nullptr;
+    mid = inc->next;
+    inc->next = nullptr;
 
     return mid;
 };
@@ -256,7 +259,7 @@ typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
         return start;
 
     listNode *mid = split(start, end);
-    listNode *left = mergeSort(start, mid);
+    listNode *left = mergeSort(start, mid->prev);
     listNode *right = mergeSort(mid, end);
 
     return merge(left, right);
