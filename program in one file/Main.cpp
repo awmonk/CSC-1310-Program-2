@@ -1,9 +1,15 @@
+/* This is a file that contains all of the program's classes and functions, as
+   well as the driver, in one discrete file. Instead of printing each sorting
+   algorithm's respective list to the terminal, a clock function using the
+   std::chrono library prints the runtime of each function in microseconds
+   expressed as a fraction of seconds */
+
 #include <bits/stdc++.h>
 using namespace std;
 using namespace std::chrono;
 using hrc = high_resolution_clock;
 
-/* TIMER DECLARATIONS */
+/* TIMER PROTOTYPES */
 hrc::time_point getTime();
 double totalTime(hrc::time_point start, hrc::time_point end);
 
@@ -367,6 +373,7 @@ int List<T>::getSize(listNode *node)
     return index;
 };
 
+/* TIMER DEFINITIONS */
 hrc::time_point getTime() { return hrc::now(); };
 
 double totalTime(hrc::time_point start, hrc::time_point end)

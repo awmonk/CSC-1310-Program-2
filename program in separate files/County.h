@@ -24,6 +24,8 @@ public:
     bool operator<(const County &c);
     bool operator>(const County &c);
 
+    /* Replaced the colons and commas in the ostream function with a set width table
+       for improved legibility */
     friend ostream &operator<<(ostream &os, const County &c)
     {
         os << setw(50) << left << c.name;
