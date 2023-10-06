@@ -1,9 +1,11 @@
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <fstream>
-#include <sstream>
+#include <bits/stdc++.h>
 using namespace std;
+using namespace std::chrono;
+using hrc = high_resolution_clock;
+
+/* TIMER DECLARATIONS */
+hrc::time_point getTime();
+double totalTime(hrc::time_point start, hrc::time_point end);
 
 /* COUNTY PROTOTYPES AND CLASS VARIABLES */
 class County
@@ -46,6 +48,7 @@ private:
     listNode *tail;
 
     void print(listNode *node);
+    void swap(listNode *a, listNode *b);
     listNode *split(listNode *left, listNode *right);
     listNode *merge(listNode *left, listNode *right);
     listNode *mergeSort(listNode *start, listNode *end);
@@ -58,6 +61,7 @@ public:
     void append(T value);
     void mergeSort();
     void outfile(const string &filename);
+    void selectionSort();
 };
 
 /* DRIVER */
@@ -67,6 +71,8 @@ int main()
     stringstream temp;
     string line, county, state;
     int index, pop;
+
+    hrc::time_point start, end;
 
     infile.open("counties_list.csv", ios::in);
     // infile.open("counties_ten.csv", ios::in);
@@ -98,14 +104,29 @@ int main()
     }
     infile.close();
 
+    /* MERGESORT */
     cout << "\nCALLING MERGE SORT\n";
+
+    start = getTime();
     list.mergeSort();
+    end = getTime();
+
+    cout << "MERGE SORT COMPLETED IN:\t" << totalTime(start, end) << " seconds\n";
 
     cout << "\nWRITING TO FILE (mergesort.txt)\n";
     list.outfile("mergesort.txt");
 
-    cout << "\nSORTED LIST\n";
-    list.print();
+    /* SELECTION SORT */
+    cout << "\nCALLING SELECTION SORT\n";
+
+    start = getTime();
+    list.selectionSort();
+    end = getTime();
+
+    cout << "SLECTION SORT COMPLETED IN:\t" << totalTime(start, end) << " seconds\n";
+
+    cout << "\nWRITING TO FILE (selectionsort.txt)\n";
+    list.outfile("selectionsort.txt");
 
     return 0;
 };
@@ -189,6 +210,35 @@ void List<T>::outfile(const string &filename)
     outfile.close();
 };
 
+template <class T>
+void List<T>::selectionSort()
+{
+    listNode *node = head;
+
+    while (node)
+    {
+        listNode *min = node;
+        listNode *temp = node->next;
+
+        while (temp)
+        {
+            if (*(temp->value) < *(min->value))
+                min = temp;
+
+            temp = temp->next;
+        }
+
+        if (min != node)
+        {
+            T tempValue = node->value;
+            node->value = min->value;
+            min->value = tempValue;
+        }
+
+        node = node->next;
+    }
+};
+
 /* Private definitions */
 template <class T>
 void List<T>::print(listNode *node)
@@ -201,6 +251,44 @@ void List<T>::print(listNode *node)
     cout << *(node->value);
 
     print(node->next);
+};
+
+template <class T>
+void List<T>::swap(listNode *a, listNode *b)
+{
+    if (a->next != b)
+    {
+        listNode *tempNext = a->next;
+        a->next = b->next;
+        b->next = tempNext;
+    }
+    else
+        a->next = b->next;
+
+    if (b->next)
+        b->next->prev = b;
+
+    if (a->next)
+        a->next->prev = a;
+
+    if (a->prev != b)
+    {
+        listNode *tempPrev = a->prev;
+        a->prev = b->prev;
+        b->prev = tempPrev;
+    }
+    else
+        a->prev = b->prev;
+
+    if (b->prev)
+        b->prev->next = b;
+
+    if (a->prev)
+        a->prev->next = a;
+
+    T tempValue = a->value;
+    a->value = b->value;
+    b->value = tempValue;
 };
 
 template <class T>
@@ -277,4 +365,12 @@ int List<T>::getSize(listNode *node)
     }
 
     return index;
+};
+
+hrc::time_point getTime() { return hrc::now(); };
+
+double totalTime(hrc::time_point start, hrc::time_point end)
+{
+    auto duration = duration_cast<microseconds>(end - start);
+    return static_cast<double>(duration.count()) / 1e6;
 };

@@ -48,5 +48,14 @@ int main()
     cout << "\nSORTED LIST\n";
     list.print();
 
+    cout << "\nCALLING SELECTION SORT\n";
+    list.selectionSort();
+
+    cout << "\nWRITING TO FILE (selectionsort.txt)\n";
+    list.outfile("selectionsort.txt");
+
+    cout << "\nREVERSED LIST\n";
+    list.print();
+
     return 0;
 };
