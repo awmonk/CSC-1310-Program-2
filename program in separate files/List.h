@@ -7,11 +7,17 @@
 using namespace std;
 
 /* LIST CLASS AND FUNCTION DEFINITIONS */
+/* The County object class has multiple variables of different types (ints and strings).
+   This template ensures that the functions in the list can handle objects with multiple
+   variable types */
 template <class T>
 class List
 {
+    /* Private data members. These pointers and functions are available only to the
+       other variables and functions in this class. They cannot be accessed by functions
+       in other classes or the driver */
 private:
-    /* Struct class for the list nodes */
+    /* A structure to create the individual list nodes */
     struct listNode
     {
         /* Template variable to hold the value of the nodes */
@@ -139,8 +145,11 @@ private:
        pointers of adjacent nodes. */
     void swap(listNode *a, listNode *b)
     {
+        /* Check to see if pointers are not consecutive nodes */
         if (a->next != b)
         {
+            /* If they aren't, swap the next pointers so that they are pointing to
+               each other */
             listNode *tempNext = a->next;
             a->next = b->next;
             b->next = tempNext;
@@ -148,14 +157,21 @@ private:
         else
             a->next = b->next;
 
+        /* If b's next node is valid, update the prev node of the node that follows
+           b to point back to b */
         if (b->next)
             b->next->prev = b;
 
+        /* If a's next node is valid, update the prev node of the node that follows
+           a to point back to a */
         if (a->next)
             a->next->prev = a;
 
+        /* Check to see if pointers are not consecutive nodes */
         if (a->prev != b)
         {
+            /* If they aren't swap the prev pointers so that they are pointing to
+               each other */
             listNode *tempPrev = a->prev;
             a->prev = b->prev;
             b->prev = tempPrev;
@@ -163,19 +179,26 @@ private:
         else
             a->prev = b->prev;
 
+        /* If b's prev node is valid, update the next node of the node that precedes
+           b to point forward to b */
         if (b->prev)
             b->prev->next = b;
 
+        /* If a's prev node is valid, update the next node of the node that precedes
+           a to point forward to a */
         if (a->prev)
             a->prev->next = a;
 
+        /* Finally, swap the stored values for each node to complete the swap */
         T tempValue = a->value;
         a->value = b->value;
         b->value = tempValue;
     };
 
+    /* Public data members. These can be freely used by other files and functions like
+       the main function, for instance */
 public:
-    /* List constructor. Initializes the head and tail to null values */
+    /* List constructor. Initializes the head and tail to null addresses */
     List() : head(nullptr), tail(nullptr){};
     /* List destructor */
     ~List()
