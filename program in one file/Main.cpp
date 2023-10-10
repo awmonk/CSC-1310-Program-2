@@ -129,7 +129,7 @@ int main()
     list.selectionSort();
     end = getTime();
 
-    cout << "SLECTION SORT COMPLETED IN:\t" << totalTime(start, end) << " seconds\n";
+    cout << "SELECTION SORT COMPLETED IN:\t" << totalTime(start, end) << " seconds\n";
 
     cout << "\nWRITING TO FILE (selectionsort.txt)\n";
     list.outfile("selectionsort.txt");
