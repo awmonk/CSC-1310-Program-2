@@ -122,22 +122,24 @@ private:
     };
 
     /* The main body of the mergeSort call */
-    typename List<T>::listNode *mergeSort(listNode *start, listNode *end)
+    typename List<T>::listNode *mergeSort(listNode *left, listNode *right)
     {
+        listNode *L, *R, *mid;
+
         /* Check to see if the list is empty or has only one element */
-        if (!start || !start->next)
-            return start;
+        if (!left || !left->next)
+            return left;
 
         /* Initialize pointers to the midpoint, a left sublist, and a right sublist.
            Recursively call the mergeSort function to perform a split on both sublists
            until each of them reach a null value. At that point, both sublists are
            sorted */
-        listNode *mid = split(start, end);
-        listNode *left = mergeSort(start, mid->prev);
-        listNode *right = mergeSort(mid, end);
+        mid = split(left, right);
+        L = mergeSort(left, mid->prev);
+        R = mergeSort(mid, right);
 
         /* Calls the merge function to combine both sorted sublists */
-        return merge(left, right);
+        return merge(L, R);
     };
 
     /* Swap function for swapping two nodes in the linked list. This function swaps
