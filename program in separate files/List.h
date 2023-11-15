@@ -147,14 +147,16 @@ private:
        pointers of adjacent nodes. */
     void swap(listNode *a, listNode *b)
     {
+        listNode *temp;
+
         /* Check to see if pointers are not consecutive nodes */
         if (a->next != b)
         {
             /* If they aren't, swap the next pointers so that they are pointing to
                each other */
-            listNode *tempNext = a->next;
+            temp->next = a->next;
             a->next = b->next;
-            b->next = tempNext;
+            b->next = temp->next;
         }
         else
             a->next = b->next;
@@ -174,9 +176,9 @@ private:
         {
             /* If they aren't swap the prev pointers so that they are pointing to
                each other */
-            listNode *tempPrev = a->prev;
+            temp->prev = a->prev;
             a->prev = b->prev;
-            b->prev = tempPrev;
+            b->prev = temp->prev;
         }
         else
             a->prev = b->prev;
@@ -192,7 +194,7 @@ private:
             a->prev->next = a;
 
         /* Finally, swap the stored values for each node to complete the swap */
-        T tempValue = a->value;
+        temp->value = a->value;
         a->value = b->value;
         b->value = tempValue;
     };
