@@ -57,7 +57,7 @@ private:
     void swap(listNode *a, listNode *b);
     listNode *split(listNode *left, listNode *right);
     listNode *merge(listNode *left, listNode *right);
-    listNode *mergeSort(listNode *start, listNode *end);
+    listNode *mergeSort(listNode *left, listNode *right);
 
 public:
     List() : head(nullptr), tail(nullptr){};
@@ -262,11 +262,13 @@ void List<T>::print(listNode *node)
 template <class T>
 void List<T>::swap(listNode *a, listNode *b)
 {
+    listNode *temp;
+
     if (a->next != b)
     {
-        listNode *tempNext = a->next;
+        temp->next = a->next;
         a->next = b->next;
-        b->next = tempNext;
+        b->next = temp->next;
     }
     else
         a->next = b->next;
@@ -279,9 +281,9 @@ void List<T>::swap(listNode *a, listNode *b)
 
     if (a->prev != b)
     {
-        listNode *tempPrev = a->prev;
+        temp->prev = a->prev;
         a->prev = b->prev;
-        b->prev = tempPrev;
+        b->prev = temp->prev;
     }
     else
         a->prev = b->prev;
@@ -292,9 +294,9 @@ void List<T>::swap(listNode *a, listNode *b)
     if (a->prev)
         a->prev->next = a;
 
-    T tempValue = a->value;
+    temp->value = a->value;
     a->value = b->value;
-    b->value = tempValue;
+    b->value = temp->value;
 };
 
 template <class T>
@@ -347,16 +349,18 @@ typename List<T>::listNode *List<T>::merge(listNode *left, listNode *right)
 };
 
 template <class T>
-typename List<T>::listNode *List<T>::mergeSort(listNode *start, listNode *end)
+typename List<T>::listNode *List<T>::mergeSort(listNode *left, listNode *right)
 {
-    if (!start || !start->next)
-        return start;
+    listNode *mid, *L, *R;
 
-    listNode *mid = split(start, end);
-    listNode *left = mergeSort(start, mid->prev);
-    listNode *right = mergeSort(mid, end);
+    if (!left || !left->next)
+        return left;
 
-    return merge(left, right);
+    mid = split(left, right);
+    L = mergeSort(left, mid->prev);
+    R = mergeSort(mid, right);
+
+    return merge(L, R);
 };
 
 template <class T>
